@@ -1,0 +1,6 @@
+project_id = "controle-entrega-gps"
+
+[functions.gps-coleta]
+verify_jwt = false
+# Autenticacao propria: tokens separados de coleta e leitura, conferidos antes
+# de qualquer acesso ao banco ou as plataformas. Nenhuma rota publica de dados.

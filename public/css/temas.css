@@ -1,0 +1,913 @@
+/* ================================================================
+   TEMAS (paletas de cor escolhidas pelo usuario)
+   ----------------------------------------------------------------
+   Carregada por ULTIMO, depois do profissional.css.
+
+   COMO FUNCIONA
+   - data-tema (claro | escuro) continua sendo o MODO BASE. Todas as
+     regras antigas `html[data-tema="escuro"] ...` seguem valendo.
+   - data-paleta (github-claro, dracula, nord...) liga uma paleta POR
+     CIMA do modo base. Cada paleta declara o seu modo base no
+     theme.js (TEMAS), que grava os dois atributos no <html>.
+   - "Claro" e "Escuro" (os temas de sempre) NAO tem data-paleta: o
+     visual padrao fica exatamente como era. Nenhuma regra daqui o
+     alcanca, exceto o bloco 3b, que corrige dois defeitos do escuro.
+
+   POR QUE TANTA VARIAVEL REPETIDA
+   As 7 folhas anteriores usam DUAS familias de token: as --t-* do
+   tema.css (sidebar, cabecalho, cartao, botao, campo, tabela) e as
+   antigas (--bg-base, --text-primary, --azul...) do operational-design e firebase
+   (estilo inline do HTML e o que o JS monta). A paleta define as
+   --t-* e o bloco 1 faz as antigas apontarem para elas, entao uma
+   paleta nova so precisa preencher a lista do bloco 2.
+
+   SELETOR html[data-paleta=x], .tema-amostra[data-paleta=x]
+   O mesmo bloco pinta a pagina E a miniatura do seletor: a amostra
+   e um <div data-paleta> que herda as mesmas variaveis, entao a
+   previa nunca fica diferente do tema de verdade.
+   Especificidade: html[...] = (0,1,1), igual a html[data-tema=...] do
+   operational-design; empata e ganha por vir depois.
+
+   PARA DESLIGAR: remova a linha <link> deste arquivo no index.html.
+   Quem estiver numa paleta volta a ver o modo base (claro/escuro).
+   ================================================================ */
+
+/* ---------- 1. PONTE: TOKENS ANTIGOS SEGUEM A PALETA ---------- */
+html[data-paleta],
+.tema-amostra[data-paleta] {
+  --bg-base: var(--t-fundo);
+  --bg-elevated: var(--t-superficie);
+  --bg-overlay: var(--t-superficie-2);
+  --bg-hover: var(--t-hover);
+  --bg-glass: var(--t-superficie);
+  --card-torre: var(--t-superficie);
+  --border: var(--t-borda);
+  --border-md: var(--t-borda-forte);
+  --border-glow: var(--t-acento);
+  --text-primary: var(--t-texto);
+  --text-secondary: var(--t-texto-2);
+  --text-muted: var(--t-texto-3);
+  --text-heading: var(--t-texto);
+  --texto-apoio: var(--t-texto-2);
+  --cor-texto-corpo: var(--t-texto-2);
+  --azul: var(--t-acento);
+  --azul-dark: var(--t-acento-forte);
+  --azul-light: var(--t-acento-fraco);
+  --cor-azul: var(--t-acento);
+  --verde: var(--t-ok);
+  --verde-dark: var(--t-ok);
+  --verde-light: var(--t-ok-fraco);
+  --vermelho: var(--t-erro);
+  --verm-dark: var(--t-erro);
+  --verm-light: var(--t-erro-fraco);
+  --amarelo: var(--t-alerta);
+  --amar-light: var(--t-alerta-fraco);
+  --roxo: var(--t-roxo);
+  --roxo-dark: var(--t-roxo);
+  --roxo-light: var(--t-acento-fraco);
+  --ciano: var(--t-ciano);
+  --industrial-green: var(--t-acento);
+  --industrial-mint: var(--t-acento);
+  --industrial-amber: var(--t-acento);
+  --industrial-line: var(--t-borda);
+  --industrial-navy: var(--t-superficie);
+  --industrial-navy-deep: var(--t-fundo);
+}
+
+/* ---------- 2. PALETAS ----------
+   Ordem de cada bloco: superficies, bordas, texto, acento, estados,
+   botao solido (fundo + texto por cima), extras.
+   --t-botao e separado de --t-acento de proposito: no escuro o acento
+   e claro (pra ser lido como TEXTO sobre fundo escuro) e branco por
+   cima dele some. Por isso cada paleta diz qual cor vai no botao e
+   qual texto fica legivel em cima (--t-sobre-botao).
+   Paletas conhecidas: valores das paletas oficiais (todas de licenca
+   aberta), com o texto ajustado ate passar 4,5:1 de contraste. */
+
+/* --- GitHub Claro (Primer) --- */
+html[data-paleta="github-claro"],
+.tema-amostra[data-paleta="github-claro"] {
+  --t-fundo: #f6f8fa;
+  --t-superficie: #ffffff;
+  --t-superficie-2: #f6f8fa;
+  --t-hover: #eef1f4;
+  --t-borda: #d8dee4;
+  --t-borda-forte: #b7c0c9;
+  --t-texto: #1f2328;
+  --t-texto-2: #59636e;
+  --t-texto-3: #818b98;
+  --t-acento: #0969da;
+  --t-acento-forte: #0550ae;
+  --t-acento-fraco: #ddf4ff;
+  --t-ok: #1a7f37;
+  --t-ok-fraco: #dafbe1;
+  --t-alerta: #9a6700;
+  --t-alerta-fraco: #fff8c5;
+  --t-erro: #cf222e;
+  --t-erro-fraco: #ffebe9;
+  --t-botao: #0969da;
+  --t-botao-hover: #0550ae;
+  --t-ok-botao: #1a7f37;
+  --t-erro-botao: #cf222e;
+  --t-sobre-botao: #ffffff;
+  --t-roxo: #8250df;
+  --t-ciano: #1b7c83;
+}
+
+/* --- GitHub Escuro (Primer dark) --- */
+html[data-paleta="github-escuro"],
+.tema-amostra[data-paleta="github-escuro"] {
+  --t-fundo: #0d1117;
+  --t-superficie: #161b22;
+  --t-superficie-2: #1c2129;
+  --t-hover: #21262d;
+  --t-borda: #30363d;
+  --t-borda-forte: #484f58;
+  --t-texto: #e6edf3;
+  --t-texto-2: #9ea7b3;
+  --t-texto-3: #7d8590;
+  --t-acento: #58a6ff;
+  --t-acento-forte: #79c0ff;
+  --t-acento-fraco: #172a45;
+  --t-ok: #3fb950;
+  --t-ok-fraco: #132b1d;
+  --t-alerta: #d29922;
+  --t-alerta-fraco: #2e2614;
+  --t-erro: #f85149;
+  --t-erro-fraco: #33191b;
+  --t-botao: #1f6feb;
+  --t-botao-hover: #1158c7;
+  --t-ok-botao: #238636;
+  --t-erro-botao: #da3633;
+  --t-sobre-botao: #ffffff;
+  --t-roxo: #bc8cff;
+  --t-ciano: #39c5cf;
+}
+
+/* --- Dracula --- */
+html[data-paleta="dracula"],
+.tema-amostra[data-paleta="dracula"] {
+  --t-fundo: #21222c;
+  --t-superficie: #282a36;
+  --t-superficie-2: #2f3141;
+  --t-hover: #383a4c;
+  --t-borda: #3b3e51;
+  --t-borda-forte: #5a5e7a;
+  --t-texto: #f8f8f2;
+  --t-texto-2: #c3c6d8;
+  --t-texto-3: #8f95b8;
+  --t-acento: #bd93f9;
+  --t-acento-forte: #d6bcfc;
+  --t-acento-fraco: #3a3354;
+  --t-ok: #50fa7b;
+  --t-ok-fraco: #22392c;
+  --t-alerta: #ffb86c;
+  --t-alerta-fraco: #3e3226;
+  --t-erro: #ff6e6e;
+  --t-erro-fraco: #43262c;
+  --t-botao: #bd93f9;
+  --t-botao-hover: #cba8fa;
+  --t-ok-botao: #50fa7b;
+  --t-erro-botao: #ff6e6e;
+  --t-sobre-botao: #1e1f29;
+  --t-roxo: #ff79c6;
+  --t-ciano: #8be9fd;
+}
+
+/* --- Nord --- */
+html[data-paleta="nord"],
+.tema-amostra[data-paleta="nord"] {
+  --t-fundo: #2e3440;
+  --t-superficie: #3b4252;
+  --t-superficie-2: #404859;
+  --t-hover: #4a5366;
+  --t-borda: #4c566a;
+  --t-borda-forte: #66728b;
+  --t-texto: #eceff4;
+  --t-texto-2: #c9d0dc;
+  --t-texto-3: #9aa5b8;
+  --t-acento: #88c0d0;
+  --t-acento-forte: #a9d6e2;
+  --t-acento-fraco: #3f5363;
+  --t-ok: #a3be8c;
+  --t-ok-fraco: #3a4541;
+  --t-alerta: #ebcb8b;
+  --t-alerta-fraco: #504c43;
+  --t-erro: #eda3aa;
+  --t-erro-fraco: #554149;
+  --t-botao: #88c0d0;
+  --t-botao-hover: #9dcbd8;
+  --t-ok-botao: #a3be8c;
+  --t-erro-botao: #e0858d;
+  --t-sobre-botao: #2e3440;
+  --t-roxo: #b48ead;
+  --t-ciano: #8fbcbb;
+}
+
+/* --- Solarized Claro --- */
+html[data-paleta="solarized-claro"],
+.tema-amostra[data-paleta="solarized-claro"] {
+  --t-fundo: #eee8d5;
+  --t-superficie: #fdf6e3;
+  --t-superficie-2: #f5efdc;
+  --t-hover: #ece5cf;
+  --t-borda: #ddd5bd;
+  --t-borda-forte: #c4b99a;
+  --t-texto: #073642;
+  --t-texto-2: #4f646b;
+  --t-texto-3: #6f7f81;
+  --t-acento: #1d6fa5;
+  --t-acento-forte: #155a87;
+  --t-acento-fraco: #e2eadf;
+  --t-ok: #5c6b00;
+  --t-ok-fraco: #eef0d2;
+  --t-alerta: #8a6400;
+  --t-alerta-fraco: #f6ead0;
+  --t-erro: #c0281f;
+  --t-erro-fraco: #f8e2d4;
+  --t-botao: #1d6fa5;
+  --t-botao-hover: #155a87;
+  --t-ok-botao: #5c6b00;
+  --t-erro-botao: #c0281f;
+  --t-sobre-botao: #ffffff;
+  --t-roxo: #6c71c4;
+  --t-ciano: #1f7f78;
+}
+
+/* --- Solarized Escuro --- */
+html[data-paleta="solarized-escuro"],
+.tema-amostra[data-paleta="solarized-escuro"] {
+  --t-fundo: #002b36;
+  --t-superficie: #073642;
+  --t-superficie-2: #0b3d4a;
+  --t-hover: #104654;
+  --t-borda: #164a57;
+  --t-borda-forte: #2f6573;
+  --t-texto: #eee8d5;
+  --t-texto-2: #a9b6b6;
+  --t-texto-3: #7f9293;
+  --t-acento: #5aaee8;
+  --t-acento-forte: #85c3ee;
+  --t-acento-fraco: #0f4a63;
+  --t-ok: #a4b81f;
+  --t-ok-fraco: #1d4433;
+  --t-alerta: #d9a92a;
+  --t-alerta-fraco: #2c4230;
+  --t-erro: #f0716a;
+  --t-erro-fraco: #2d2328;
+  --t-botao: #4aa3e2;
+  --t-botao-hover: #64b1e8;
+  --t-ok-botao: #859900;
+  --t-erro-botao: #ee6b64;
+  --t-sobre-botao: #002b36;
+  --t-roxo: #9a9ee6;
+  --t-ciano: #2aa198;
+}
+
+/* --- Catppuccin Latte (claro) --- */
+html[data-paleta="catppuccin-latte"],
+.tema-amostra[data-paleta="catppuccin-latte"] {
+  --t-fundo: #e6e9ef;
+  --t-superficie: #eff1f5;
+  --t-superficie-2: #e9ecf2;
+  --t-hover: #dce0e8;
+  --t-borda: #ccd0da;
+  --t-borda-forte: #acb0be;
+  --t-texto: #4c4f69;
+  --t-texto-2: #5c5f77;
+  --t-texto-3: #7c7f93;
+  --t-acento: #8839ef;
+  --t-acento-forte: #6d1fd6;
+  --t-acento-fraco: #e4daf9;
+  --t-ok: #2b731c;
+  --t-ok-fraco: #e4f2e0;
+  --t-alerta: #995c07;
+  --t-alerta-fraco: #f9eedc;
+  --t-erro: #c40e36;
+  --t-erro-fraco: #f5d9df;
+  --t-botao: #8839ef;
+  --t-botao-hover: #7527de;
+  --t-ok-botao: #2f7d1f;
+  --t-erro-botao: #c40e36;
+  --t-sobre-botao: #ffffff;
+  --t-roxo: #5566e8;
+  --t-ciano: #0580b2;
+}
+
+/* --- Catppuccin Mocha (escuro) --- */
+html[data-paleta="catppuccin-mocha"],
+.tema-amostra[data-paleta="catppuccin-mocha"] {
+  --t-fundo: #181825;
+  --t-superficie: #1e1e2e;
+  --t-superficie-2: #252537;
+  --t-hover: #313244;
+  --t-borda: #313244;
+  --t-borda-forte: #505368;
+  --t-texto: #cdd6f4;
+  --t-texto-2: #a6adc8;
+  --t-texto-3: #7f849c;
+  --t-acento: #cba6f7;
+  --t-acento-forte: #dcc3fa;
+  --t-acento-fraco: #342b4b;
+  --t-ok: #a6e3a1;
+  --t-ok-fraco: #253328;
+  --t-alerta: #f9e2af;
+  --t-alerta-fraco: #39342a;
+  --t-erro: #f38ba8;
+  --t-erro-fraco: #3d2533;
+  --t-botao: #cba6f7;
+  --t-botao-hover: #d7b9f9;
+  --t-ok-botao: #a6e3a1;
+  --t-erro-botao: #f38ba8;
+  --t-sobre-botao: #11111b;
+  --t-roxo: #f5c2e7;
+  --t-ciano: #89dceb;
+}
+
+/* --- Tokyo Night --- */
+html[data-paleta="tokyo-night"],
+.tema-amostra[data-paleta="tokyo-night"] {
+  --t-fundo: #16161e;
+  --t-superficie: #1a1b26;
+  --t-superficie-2: #1f2335;
+  --t-hover: #292e42;
+  --t-borda: #292e42;
+  --t-borda-forte: #444b6a;
+  --t-texto: #c0caf5;
+  --t-texto-2: #a9b1d6;
+  --t-texto-3: #7a82ab;
+  --t-acento: #7aa2f7;
+  --t-acento-forte: #a3bffa;
+  --t-acento-fraco: #24304f;
+  --t-ok: #9ece6a;
+  --t-ok-fraco: #23301f;
+  --t-alerta: #e0af68;
+  --t-alerta-fraco: #352d20;
+  --t-erro: #f7768e;
+  --t-erro-fraco: #3b2029;
+  --t-botao: #7aa2f7;
+  --t-botao-hover: #8db0f9;
+  --t-ok-botao: #9ece6a;
+  --t-erro-botao: #f7768e;
+  --t-sobre-botao: #16161e;
+  --t-roxo: #bb9af7;
+  --t-ciano: #7dcfff;
+}
+
+/* --- Gruvbox (escuro) --- */
+html[data-paleta="gruvbox"],
+.tema-amostra[data-paleta="gruvbox"] {
+  --t-fundo: #1d2021;
+  --t-superficie: #282828;
+  --t-superficie-2: #302e2d;
+  --t-hover: #3c3836;
+  --t-borda: #3c3836;
+  --t-borda-forte: #5a524c;
+  --t-texto: #ebdbb2;
+  --t-texto-2: #d5c4a1;
+  --t-texto-3: #a89984;
+  --t-acento: #fabd2f;
+  --t-acento-forte: #fcd36b;
+  --t-acento-fraco: #3d3420;
+  --t-ok: #b8bb26;
+  --t-ok-fraco: #2f3119;
+  --t-alerta: #fe8019;
+  --t-alerta-fraco: #3d2a19;
+  --t-erro: #fb6a55;
+  --t-erro-fraco: #3e211d;
+  --t-botao: #fabd2f;
+  --t-botao-hover: #fcca55;
+  --t-ok-botao: #b8bb26;
+  --t-erro-botao: #fb6a55;
+  --t-sobre-botao: #1d2021;
+  --t-roxo: #d3869b;
+  --t-ciano: #8ec07c;
+}
+
+/* --- Floresta (criado p/ o sistema: verde da marca, claro) --- */
+html[data-paleta="floresta"],
+.tema-amostra[data-paleta="floresta"] {
+  --t-fundo: #f1f5f0;
+  --t-superficie: #ffffff;
+  --t-superficie-2: #f0f5ee;
+  --t-hover: #e6eee3;
+  --t-borda: #d5e0d1;
+  --t-borda-forte: #b2c3ab;
+  --t-texto: #1b2a1f;
+  --t-texto-2: #4c6050;
+  --t-texto-3: #7d8f80;
+  --t-acento: #0f766e;
+  --t-acento-forte: #0b5c56;
+  --t-acento-fraco: #ddf1ec;
+  --t-ok: #137539;
+  --t-ok-fraco: #e8f6eb;
+  --t-alerta: #9a6700;
+  --t-alerta-fraco: #fdf6e6;
+  --t-erro: #c62828;
+  --t-erro-fraco: #fbe4e2;
+  --t-botao: #0f766e;
+  --t-botao-hover: #0b5c56;
+  --t-ok-botao: #15803d;
+  --t-erro-botao: #c62828;
+  --t-sobre-botao: #ffffff;
+  --t-roxo: #6d5bb5;
+  --t-ciano: #0e7490;
+}
+
+/* --- Papel (criado p/ o sistema: sepia, cansa menos a vista) --- */
+html[data-paleta="papel"],
+.tema-amostra[data-paleta="papel"] {
+  --t-fundo: #f3eee4;
+  --t-superficie: #fbf8f2;
+  --t-superficie-2: #f3ede2;
+  --t-hover: #ece4d6;
+  --t-borda: #e0d6c4;
+  --t-borda-forte: #c6b79f;
+  --t-texto: #2f2a24;
+  --t-texto-2: #5e5546;
+  --t-texto-3: #8d8270;
+  --t-acento: #8a5a2b;
+  --t-acento-forte: #6c4420;
+  --t-acento-fraco: #f1e3d0;
+  --t-ok: #3f7a33;
+  --t-ok-fraco: #ebf2e4;
+  --t-alerta: #8d6400;
+  --t-alerta-fraco: #f8eed7;
+  --t-erro: #b3361f;
+  --t-erro-fraco: #f6ddd5;
+  --t-botao: #8a5a2b;
+  --t-botao-hover: #6c4420;
+  --t-ok-botao: #3f7a33;
+  --t-erro-botao: #b3361f;
+  --t-sobre-botao: #ffffff;
+  --t-roxo: #7b5a8c;
+  --t-ciano: #2f6f73;
+}
+
+/* --- Oceano (criado p/ o sistema: azul petroleo, escuro) --- */
+html[data-paleta="oceano"],
+.tema-amostra[data-paleta="oceano"] {
+  --t-fundo: #0a1a24;
+  --t-superficie: #0f2330;
+  --t-superficie-2: #132a39;
+  --t-hover: #183447;
+  --t-borda: #1d3a4d;
+  --t-borda-forte: #2c5269;
+  --t-texto: #e2eef5;
+  --t-texto-2: #a3bfcf;
+  --t-texto-3: #7193a7;
+  --t-acento: #38bdf8;
+  --t-acento-forte: #7dd3fc;
+  --t-acento-fraco: #12344b;
+  --t-ok: #34d399;
+  --t-ok-fraco: #0f3229;
+  --t-alerta: #fbbf24;
+  --t-alerta-fraco: #33290f;
+  --t-erro: #f87171;
+  --t-erro-fraco: #3a1d22;
+  --t-botao: #0ea5e9;
+  --t-botao-hover: #38bdf8;
+  --t-ok-botao: #34d399;
+  --t-erro-botao: #f87171;
+  --t-sobre-botao: #06141c;
+  --t-roxo: #a78bfa;
+  --t-ciano: #22d3ee;
+}
+
+/* --- Grafite (criado p/ o sistema: neutro com laranja, escuro) --- */
+html[data-paleta="grafite"],
+.tema-amostra[data-paleta="grafite"] {
+  --t-fundo: #121212;
+  --t-superficie: #1b1b1b;
+  --t-superficie-2: #212121;
+  --t-hover: #2a2a2a;
+  --t-borda: #2f2f2f;
+  --t-borda-forte: #4a4a4a;
+  --t-texto: #ececec;
+  --t-texto-2: #b4b4b4;
+  --t-texto-3: #858585;
+  --t-acento: #f59e0b;
+  --t-acento-forte: #fbbf24;
+  --t-acento-fraco: #33270f;
+  --t-ok: #34d399;
+  --t-ok-fraco: #10302a;
+  --t-alerta: #fb923c;
+  --t-alerta-fraco: #3a2414;
+  --t-erro: #f87171;
+  --t-erro-fraco: #3a1d1d;
+  --t-botao: #f59e0b;
+  --t-botao-hover: #fbb13c;
+  --t-ok-botao: #34d399;
+  --t-erro-botao: #f87171;
+  --t-sobre-botao: #121212;
+  --t-roxo: #c4a5fa;
+  --t-ciano: #67e8f9;
+}
+
+/* --- Alto contraste (acessibilidade: baixa visao, sol na tela) --- */
+html[data-paleta="alto-contraste"],
+.tema-amostra[data-paleta="alto-contraste"] {
+  --t-fundo: #000000;
+  --t-superficie: #000000;
+  --t-superficie-2: #101010;
+  --t-hover: #1f1f1f;
+  --t-borda: #9a9a9a;
+  --t-borda-forte: #ffffff;
+  --t-texto: #ffffff;
+  --t-texto-2: #f2f2f2;
+  --t-texto-3: #cfcfcf;
+  --t-acento: #ffd600;
+  --t-acento-forte: #ffe14d;
+  --t-acento-fraco: #2b2400;
+  --t-ok: #4dff88;
+  --t-ok-fraco: #002b12;
+  --t-alerta: #ffb000;
+  --t-alerta-fraco: #2e2000;
+  --t-erro: #ff7070;
+  --t-erro-fraco: #330000;
+  --t-botao: #ffd600;
+  --t-botao-hover: #ffe14d;
+  --t-ok-botao: #4dff88;
+  --t-erro-botao: #ff7070;
+  --t-sobre-botao: #000000;
+  --t-roxo: #e0a3ff;
+  --t-ciano: #66e6ff;
+}
+
+/* Amostras dos dois temas padrao. Na PAGINA eles nao tem data-paleta
+   (o visual de sempre vem do tema.css); so a miniatura precisa dos
+   valores, copiados de la. */
+.tema-amostra[data-paleta="claro"] {
+  --t-fundo: #f6f7fb;
+  --t-superficie: #ffffff;
+  --t-borda: #e3e6ee;
+  --t-texto: #1c2333;
+  --t-texto-3: #8a92a6;
+  --t-acento: #5b5bd6;
+  --t-botao: #5b5bd6;
+}
+.tema-amostra[data-paleta="escuro"] {
+  --t-fundo: #0e1320;
+  --t-superficie: #161c2b;
+  --t-borda: #253048;
+  --t-texto: #e8ecf5;
+  --t-texto-3: #6f7b93;
+  --t-acento: #8b8bf0;
+  --t-botao: #5b5bd6;
+}
+
+/* ---------- 3. COR CRAVADA QUE NAO SEGUE TOKEN ----------
+   Regras das camadas antigas com cor fixa (e !important), que nenhuma
+   variavel alcanca. Cada uma aqui tem especificidade >= a original. */
+
+/* Botoes solidos: o profissional.css (secao 11) crava #5b5bd6/#12805c/
+   #c62f2f no escuro; o tema.css crava texto branco. */
+html[data-paleta] .btn-blue,
+html[data-paleta] .btn-purple {
+  background: var(--t-botao) !important;
+  border-color: var(--t-botao) !important;
+  color: var(--t-sobre-botao) !important;
+}
+html[data-paleta] .btn-blue:hover,
+html[data-paleta] .btn-purple:hover {
+  background: var(--t-botao-hover) !important;
+  border-color: var(--t-botao-hover) !important;
+}
+html[data-paleta] .btn-green {
+  background: var(--t-ok-botao) !important;
+  border-color: var(--t-ok-botao) !important;
+  color: var(--t-sobre-botao) !important;
+}
+html[data-paleta] .btn-red {
+  background: var(--t-erro-botao) !important;
+  border-color: var(--t-erro-botao) !important;
+  color: var(--t-sobre-botao) !important;
+}
+
+/* Emoji/icone dentro do botao solido herda a cor do texto. */
+html[data-paleta] .btn-blue *,
+html[data-paleta] .btn-green *,
+html[data-paleta] .btn-red *,
+html[data-paleta] .btn-purple * {
+  color: inherit !important;
+}
+
+html[data-paleta] .badge,
+html[data-paleta] .tab-badge-nav,
+html[data-paleta] .fr-badge,
+html[data-paleta] .rp-badge {
+  background: var(--t-botao) !important;
+  color: var(--t-sobre-botao) !important;
+}
+
+html[data-paleta] .atualizacao-barra {
+  background: var(--t-botao);
+  color: var(--t-sobre-botao);
+}
+
+/* Cabecalho de tabela: operational-design crava #232629 no claro. */
+html[data-paleta] th {
+  background: var(--t-superficie-2) !important;
+  color: var(--t-texto-2) !important;
+}
+
+/* Caixinhas: profissional.css crava azul-ceu. */
+html[data-paleta] input[type="checkbox"],
+html[data-paleta] input[type="radio"] {
+  accent-color: var(--t-acento);
+}
+
+/* Contorno de foco na cor da paleta (o do profissional.css usa --azul,
+   que ja segue; reafirmado aqui so por clareza). */
+html[data-paleta] :focus-visible {
+  outline-color: var(--t-acento) !important;
+}
+
+/* Selecao de texto na cor da paleta. */
+html[data-paleta] ::selection {
+  background: var(--t-acento-fraco);
+  color: var(--t-texto);
+}
+
+/* Rodapes "Desenvolvido por": cinza cravado no firebase-style.css
+   (#9aa1ad / #667085), que some em quase todo fundo de paleta. */
+html[data-paleta] .sidebar-footer,
+html[data-paleta] .app-footer {
+  color: var(--t-texto-2) !important;
+}
+html[data-paleta] .sidebar-footer strong,
+html[data-paleta] .app-footer strong {
+  color: var(--t-texto) !important;
+}
+
+/* Barra de rolagem acompanha o fundo (Edge/Chrome). */
+html[data-paleta] {
+  scrollbar-color: var(--t-borda-forte) var(--t-fundo);
+}
+
+/* ---------- 3b. DEFEITOS DO ESCURO (valem tambem no padrao) ----------
+   O firebase-style.css pinta o "Abrir SSW" com fundo #effaf6 cravado e
+   !important: no escuro ele virava um bloco branco no meio da barra
+   lateral. Passa a seguir a cor de "ok" do tema em uso. */
+html[data-paleta] .app-sidebar .sidebar-link-externo,
+html[data-tema="escuro"] .app-sidebar .sidebar-link-externo {
+  background: var(--t-ok-fraco) !important;
+  border-color: var(--t-ok) !important;
+  color: var(--t-ok) !important;
+}
+
+/* ---------- 3c. TORRE DE CONTROLE (torre.html) ----------
+   A Torre nao carrega o tema.css, e o operational-design.css crava
+   #111827 nos cartoes e #0b1220 nos campos com !important. Escopo pelo
+   :has(.header-painel) (o cabecalho que so existe na Torre) para nao
+   mexer no index.html, onde o tema.css ja resolve isso. */
+html[data-paleta]:has(.header-painel) .card,
+html[data-paleta]:has(.header-painel) .torre-painel,
+html[data-paleta]:has(.header-painel) .ranking-box,
+html[data-paleta]:has(.header-painel) .header-painel {
+  background: var(--t-superficie) !important;
+  border-color: var(--t-borda) !important;
+}
+html[data-paleta]:has(.header-painel) input:not([type="checkbox"]):not([type="radio"]),
+html[data-paleta]:has(.header-painel) select,
+html[data-paleta]:has(.header-painel) textarea,
+html[data-paleta]:has(.header-painel) .multi-select-btn {
+  background: var(--t-superficie-2) !important;
+  border-color: var(--t-borda-forte) !important;
+  color: var(--t-texto) !important;
+}
+html[data-paleta]:has(.header-painel) .multi-select-dropdown,
+html[data-paleta]:has(.header-painel) .torre-table {
+  background: var(--t-superficie) !important;
+}
+
+/* ---------- 4. SELETOR DE TEMA ----------
+   Janelinha aberta pelo botao "Tema" do cabecalho (theme.js).
+   Tudo com prefixo #temaSeletor e !important nas propriedades que as
+   folhas antigas mexem em TODO botao (caixa alta, altura e largura
+   minima, sombra, gradiente) — sem isso cada opcao herdava o visual
+   do botao da camada de baixo.
+   As cores tem reserva (--ts-*): a Torre nao carrega o tema.css, entao
+   nos dois temas padrao as --t-* nem existem la. */
+#temaSeletor {
+  --ts-fundo: var(--t-superficie, var(--bg-elevated, #ffffff));
+  --ts-hover: var(--t-hover, var(--bg-hover, #eef1f8));
+  --ts-borda: var(--t-borda, var(--border, #e3e6ee));
+  --ts-borda-forte: var(--t-borda-forte, var(--border-md, #ccd2e0));
+  --ts-texto: var(--t-texto, var(--text-primary, #1c2333));
+  --ts-fraco: var(--t-texto-3, var(--text-muted, #8a92a6));
+  --ts-acento: var(--t-acento, var(--azul, #5b5bd6));
+
+  position: fixed;
+  z-index: 100000;
+  box-sizing: border-box;
+  width: 440px;
+  max-width: calc(100vw - 24px);
+  max-height: min(80vh, 660px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 14px 14px 12px;
+  background: var(--ts-fundo);
+  border: 1px solid var(--ts-borda-forte);
+  border-radius: 6px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  color: var(--ts-texto);
+  font-family: inherit;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-align: left;
+  text-transform: none;
+}
+#temaSeletor[hidden] { display: none !important; }
+
+#temaSeletor .tema-topo {
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+#temaSeletor .tema-titulo {
+  color: var(--ts-texto);
+  font-size: 14px;
+  font-weight: 700;
+}
+#temaSeletor .tema-dica {
+  color: var(--ts-fraco);
+  font-size: 11px;
+}
+#temaSeletor .tema-grupo {
+  color: var(--ts-fraco);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 12px 2px 6px;
+  text-transform: uppercase;
+}
+#temaSeletor .tema-grade {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+#temaSeletor .tema-opcao {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex !important;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 6px !important;
+  border: 1px solid var(--ts-borda) !important;
+  border-radius: 5px !important;
+  background: var(--ts-fundo) !important;
+  box-shadow: none !important;
+  color: var(--ts-texto) !important;
+  font: inherit !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  transform: none !important;
+}
+#temaSeletor .tema-opcao:hover {
+  border-color: var(--ts-borda-forte) !important;
+  background: var(--ts-hover) !important;
+}
+#temaSeletor .tema-opcao:focus-visible {
+  outline: 2px solid var(--ts-acento) !important;
+  outline-offset: 1px !important;
+}
+#temaSeletor .tema-opcao[aria-checked="true"] {
+  border-color: var(--ts-acento) !important;
+  box-shadow: inset 0 0 0 1px var(--ts-acento) !important;
+}
+#temaSeletor .tema-nome {
+  display: block;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Selo de "em uso" no canto da miniatura (fora da linha do nome, para o
+   nome inteiro caber). */
+#temaSeletor .tema-check {
+  align-items: center;
+  background: var(--ts-acento);
+  border: 2px solid var(--ts-fundo);
+  border-radius: 50%;
+  color: var(--ts-fundo);
+  display: none;
+  font-size: 10px;
+  font-weight: 800;
+  height: 18px;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 18px;
+}
+#temaSeletor .tema-opcao[aria-checked="true"] .tema-check { display: flex; }
+
+/* Miniatura: fundo + barra lateral + cartao com duas linhas + botao.
+   Pinta com as variaveis da propria paleta (ver cabecalho do arquivo). */
+.tema-amostra {
+  background: var(--t-fundo);
+  border: 1px solid var(--t-borda);
+  border-radius: 3px;
+  box-sizing: border-box;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 22% 1fr;
+  height: 46px;
+  overflow: hidden;
+  padding: 4px;
+  pointer-events: none;
+}
+.tema-amostra i {
+  display: block;
+  font-style: normal;
+}
+.tema-amostra .ta-lado {
+  background: var(--t-superficie);
+  border-radius: 2px;
+  position: relative;
+}
+.tema-amostra .ta-lado::before {
+  background: var(--t-acento);
+  border-radius: 1px;
+  content: "";
+  height: 3px;
+  left: 3px;
+  position: absolute;
+  right: 3px;
+  top: 5px;
+}
+.tema-amostra .ta-cartao {
+  background: var(--t-superficie);
+  border: 1px solid var(--t-borda);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px;
+}
+.tema-amostra .ta-linha {
+  background: var(--t-texto);
+  border-radius: 1px;
+  height: 3px;
+  width: 70%;
+}
+.tema-amostra .ta-linha.ta-fraca {
+  background: var(--t-texto-3);
+  width: 45%;
+}
+.tema-amostra .ta-botao {
+  background: var(--t-botao);
+  border-radius: 2px;
+  height: 7px;
+  margin-top: auto;
+  width: 38%;
+}
+
+/* "Automatico": metade claro, metade escuro. */
+.tema-amostra[data-paleta="auto"] {
+  background: linear-gradient(110deg, #f6f7fb 0 50%, #0e1320 50% 100%);
+  border-color: #8a92a6;
+  --t-superficie: transparent;
+  --t-borda: #8a92a6;
+  --t-texto: #8a92a6;
+  --t-texto-3: #8a92a6;
+  --t-acento: #5b5bd6;
+  --t-botao: #5b5bd6;
+}
+
+#temaSeletor .tema-rodape {
+  border-top: 1px solid var(--ts-borda);
+  color: var(--ts-fraco);
+  font-size: 11px;
+  line-height: 1.4;
+  margin-top: 12px;
+  padding-top: 8px;
+}
+
+/* Celular: vira folha presa embaixo, ocupando a largura. */
+@media (max-width: 560px) {
+  #temaSeletor {
+    bottom: 0 !important;
+    left: 0 !important;
+    max-height: 72vh;
+    max-width: 100vw;
+    right: auto !important;
+    top: auto !important;
+    width: 100vw;
+    border-radius: 10px 10px 0 0;
+  }
+}

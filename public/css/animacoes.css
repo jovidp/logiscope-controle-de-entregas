@@ -1,0 +1,217 @@
+/* ================================================================
+   ANIMAÇÕES E MICROINTERAÇÕES
+   ----------------------------------------------------------------
+   Carregada depois do tema.css: e daqui que saem os ajustes de
+   movimento, sem mexer nas regras de aparencia.
+
+   TUDO aqui e desligado por prefers-reduced-motion no fim do
+   arquivo. Movimento involuntario passa mal quem tem sensibilidade
+   vestibular, e este e um sistema de uso diario, o dia inteiro.
+
+   Duracoes curtas de proposito (0,15s a 0,25s): quem lanca ocorrencia
+   repete o mesmo caminho dezenas de vezes por dia — animacao longa
+   vira atraso, nao charme.
+   ================================================================ */
+
+/* ---------- AVISO DE VERSAO NOVA ----------
+   Antes ficava no canto inferior esquerdo e passava batido — gente
+   seguia dias na versao antiga. Agora nasce no meio da tela.
+
+   NAO ganha fundo escuro atras de proposito: esta barra so aparece
+   quando o usuario TEM trabalho em andamento (ver atualizacao.js).
+   Tapar a tela de quem esta no meio de um lancamento seria trocar um
+   problema por outro pior. O cartao fica no centro, mas o resto da
+   tela continua clicavel. */
+.atualizacao-barra {
+  bottom: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  /* Empilha em cartao, em vez de fita horizontal comprida. */
+  flex-direction: column;
+  gap: 14px;
+  max-width: min(92vw, 380px);
+  /* Topo bem mais folgado que a base: o X de fechar fica no canto e
+     precisa de faixa propria. Com menos que isso ele encosta na
+     primeira linha do texto — conferido em print. */
+  padding: 40px 24px 24px;
+  text-align: center;
+
+  border-radius: 16px;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  font-size: 14px;
+
+  animation: avisoVersaoEntra 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+
+@keyframes avisoVersaoEntra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.atualizacao-barra .atualizacao-btn {
+  font-size: 13px !important;
+  padding: 9px 22px !important;
+  width: 100%;
+  /* Respiro antes de comecar: da tempo de o olho achar o cartao. */
+  animation: avisoBotaoPulso 2.4s ease-in-out 0.8s infinite;
+}
+
+@keyframes avisoBotaoPulso {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(255, 255, 255, 0);
+  }
+}
+
+/* O "continuar nesta versao" sai do fluxo vertical e vira X de canto. */
+.atualizacao-barra .atualizacao-x {
+  position: absolute;
+  right: 10px;
+  top: 8px;
+  font-size: 16px !important;
+  line-height: 1;
+  opacity: 0.7;
+  transition: opacity 0.14s ease;
+}
+.atualizacao-barra .atualizacao-x:hover {
+  opacity: 1;
+}
+
+/* ---------- MODAIS ----------
+   O cartao sobe e cresce um tico ao abrir. Nao precisa de JS: sair de
+   display:none reinicia a animacao sozinho, entao vale toda vez que o
+   modal abre, inclusive o mesmo modal reaberto. */
+#docasModal > div,
+#usuariosModal > div,
+#tmsModalImportar > div,
+#tmsModalImportarPedidos > div {
+  animation: modalCartaoEntra 0.2s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes modalCartaoEntra {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- BOTOES ----------
+   Afunda no clique. E o retorno que falta em tela sensivel ao toque,
+   onde nao existe :hover para confirmar que o toque pegou. */
+button:active:not(:disabled),
+.btn:active:not(:disabled),
+input[type="submit"]:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+button,
+.btn,
+input[type="submit"] {
+  transition:
+    transform 0.09s ease,
+    filter 0.15s ease;
+}
+
+button:hover:not(:disabled),
+.btn:hover:not(:disabled) {
+  filter: brightness(1.07);
+}
+
+/* ---------- CARTOES ----------
+   Sobe de leve no hover. So no ponteiro fino: no toque, :hover fica
+   "grudado" depois do tap e o cartao ficaria levantado sem motivo. */
+@media (hover: hover) and (pointer: fine) {
+  .card,
+  .tms-card,
+  .tms-kpi,
+  .backlog-cartao,
+  .atraso-card {
+    transition:
+      transform 0.16s ease,
+      box-shadow 0.16s ease;
+  }
+
+  .card:hover,
+  .tms-card:hover,
+  .tms-kpi:hover,
+  .backlog-cartao:hover,
+  .atraso-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* ---------- LINHAS DE TABELA ----------
+   Realce de leitura: numa tabela larga, ajuda a nao trocar de linha no
+   meio da conferencia. */
+tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+/* ---------- CAMPO EM FOCO ----------
+   Casa com o pulo automatico entre campos (pular-campos.js): quando o
+   foco anda sozinho, o realce e o que mostra PARA ONDE ele foi. */
+input:focus,
+select:focus,
+textarea:focus,
+.select-search-input:focus {
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
+}
+
+/* ================================================================
+   Quem pediu menos movimento, recebe menos movimento. Sem excecao.
+   ================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .atualizacao-barra,
+  .atualizacao-barra .atualizacao-btn,
+  #docasModal > div,
+  #usuariosModal > div,
+  #tmsModalImportar > div,
+  #tmsModalImportarPedidos > div {
+    animation: none !important;
+  }
+
+  button,
+  .btn,
+  input[type="submit"],
+  .card,
+  .tms-card,
+  .tms-kpi,
+  .backlog-cartao,
+  .atraso-card,
+  tbody tr,
+  input,
+  select,
+  textarea {
+    transition: none !important;
+  }
+
+  button:active:not(:disabled),
+  .btn:active:not(:disabled),
+  .card:hover,
+  .tms-card:hover,
+  .tms-kpi:hover,
+  .backlog-cartao:hover,
+  .atraso-card:hover {
+    transform: none !important;
+  }
+}

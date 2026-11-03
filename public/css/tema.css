@@ -1,0 +1,829 @@
+/* ============================================================================
+   TEMA — camada visual unica do Controle de Entrega
+   ----------------------------------------------------------------------------
+   Carregada por ULTIMO, depois de style.css, layout.css, operational-design.css
+   e firebase-style.css. Redefine cor, tipografia, espacamento, borda e sombra
+   de todos os componentes; NAO mexe em grid, posicionamento nem tamanho de
+   coluna — essa parte ja funciona e mudar aqui quebraria telas que nao da para
+   conferir uma a uma.
+
+   Para desfazer TUDO: remova a tag deste arquivo do index.html. Nada mais
+   depende dele.
+
+   Os !important aqui nao sao preguica: o CSS existente tem 390 deles espalhados
+   em 4 arquivos, e sem isso a camada simplesmente nao venceria. Ficam restritos
+   a cor/borda/sombra/raio — nunca a layout.
+   ============================================================================ */
+
+/* ---------- PALETA ---------- */
+/* Claro por padrao; escuro so quando o usuario escolhe (theme.js grava
+   data-tema="escuro"). Uma variavel muda o sistema inteiro. */
+:root {
+  --t-fundo: #f6f7fb;
+  --t-superficie: #ffffff;
+  --t-superficie-2: #f1f3f9;
+  --t-hover: #eef1f8;
+  --t-borda: #e3e6ee;
+  --t-borda-forte: #ccd2e0;
+
+  --t-texto: #1c2333;
+  --t-texto-2: #5b6478;
+  --t-texto-3: #8a92a6;
+
+  --t-acento: #5b5bd6;
+  --t-acento-forte: #4a4ac4;
+  --t-acento-fraco: #eeeefc;
+
+  --t-ok: #12805c;
+  --t-ok-fraco: #e6f6f0;
+  --t-alerta: #9a6700;
+  --t-alerta-fraco: #fdf3e2;
+  --t-erro: #c62f2f;
+  --t-erro-fraco: #fdecec;
+
+  --t-r: 10px;
+  --t-r-sm: 7px;
+  --t-sombra: 0 1px 2px rgba(20, 26, 43, 0.05);
+  --t-sombra-2: 0 4px 16px rgba(20, 26, 43, 0.08);
+}
+
+html[data-tema="escuro"] {
+  --t-fundo: #0e1320;
+  --t-superficie: #161c2b;
+  --t-superficie-2: #1c2434;
+  --t-hover: #222b3d;
+  --t-borda: #253048;
+  --t-borda-forte: #33405c;
+
+  --t-texto: #e8ecf5;
+  --t-texto-2: #a3adc2;
+  --t-texto-3: #6f7b93;
+
+  --t-acento: #8b8bf0;
+  --t-acento-forte: #a0a0f5;
+  --t-acento-fraco: #1e2440;
+
+  --t-ok: #3fcf9a;
+  --t-ok-fraco: #16301f;
+  --t-alerta: #e0a83a;
+  --t-alerta-fraco: #33280f;
+  --t-erro: #f07171;
+  --t-erro-fraco: #3a1c1c;
+
+  --t-sombra: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --t-sombra-2: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- VARIAVEIS FANTASMA ----------
+   Varios JS montam estilo inline com var(--x, FALLBACK) usando nomes que nunca
+   existiram no CSS: --surface-2, --bg, --bg-card, --success... Sem a variavel,
+   o navegador aplica o fallback — e como esses fallbacks foram escritos na era
+   do tema escuro, aparecia um bloco escuro no meio da tela clara (o cabecalho
+   dos cards de CTE, com var(--surface-2,#242424), era o caso mais visivel).
+
+   Em vez de caçar cada uso em 8 arquivos JS, o nome ganha valor aqui e passa a
+   seguir o tema — inclusive no escuro, porque aponta para as --t-*.
+   Se um dia o JS for limpo, este bloco pode sair junto. */
+:root,
+html[data-tema="escuro"] {
+  --surface-2: var(--t-superficie-2);
+  --bg: var(--t-fundo);
+  --bg-card: var(--t-superficie);
+  --text: var(--t-texto);
+  --text-body: var(--t-texto);
+  --success: var(--t-ok);
+  --success-soft: var(--t-ok-fraco);
+  --accent: var(--t-alerta);
+  --danger: var(--t-erro);
+  --laranja: var(--t-alerta);
+  --torre-laranja: var(--t-alerta);
+}
+
+/* ---------- MOVIMENTO ----------
+   Rolagem suave e revelacao dos blocos ao entrar na tela (ver animacoes.js).
+   O movimento e curto e discreto de proposito: isto e ferramenta de trabalho
+   usada o dia inteiro, e animacao longa vira espera. */
+html {
+  scroll-behavior: smooth;
+}
+
+.anim-entrada {
+  opacity: 0;
+  transform: translateY(14px);
+}
+
+.anim-pronto {
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.4s ease-out, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Realce ao passar o mouse: sobe 1px e a borda ganha cor. Bem menos do que o
+   "pulo" que existia antes — em tela cheia de cartao, movimento grande cansa. */
+.section-shell,
+.card,
+.tms-kpi,
+.tms-card,
+.tms-viagem,
+.backlog-cartao {
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+}
+
+.card:hover,
+.tms-kpi:hover,
+.tms-card:hover,
+.tms-viagem:hover,
+.backlog-cartao:hover {
+  border-color: var(--t-borda-forte) !important;
+  box-shadow: var(--t-sombra-2) !important;
+  transform: translateY(-1px);
+}
+
+/* Item de fila/lista desliza de leve para o lado, sugerindo o clique. */
+.fr-item,
+.backlog-tabela tbody tr {
+  transition: background 0.14s ease, transform 0.14s ease;
+}
+.fr-item:hover { transform: translateX(2px); }
+
+/* Botao afunda 1px no clique: devolve a sensacao de que o toque pegou. */
+button:active,
+.btn-blue:active,
+.btn-green:active,
+.btn-red:active,
+.btn-ghost:active { transform: translateY(1px); }
+
+/* Troca de aba entra com um respiro. */
+.aba:not(.aba-hidden) {
+  animation: temaEntraAba 0.26s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes temaEntraAba {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Badge que muda de valor chama atencao sem piscar. */
+@keyframes temaPulso {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.14); }
+  100% { transform: scale(1); }
+}
+.tab-badge-nav.mudou,
+.fr-badge.mudou { animation: temaPulso 0.4s ease-out; }
+
+/* Acessibilidade em primeiro lugar: quem pede menos movimento nao recebe
+   NENHUM. Movimento involuntario passa mal quem tem sensibilidade vestibular —
+   nao e questao de preferencia estetica. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .anim-entrada { opacity: 1; transform: none; }
+}
+
+/* ---------- BASE ---------- */
+body {
+  background: var(--t-fundo) !important;
+  color: var(--t-texto) !important;
+}
+
+/* Fundo decorativo (grid/gradiente) some: e o maior responsavel pela sensacao
+   de "poluido", e nao carrega informacao nenhuma. */
+body::before,
+body::after { display: none !important; }
+
+h1, h2, h3, h4 { color: var(--t-texto) !important; }
+
+a { color: var(--t-acento); }
+
+/* ---------- SIDEBAR ---------- */
+.app-sidebar {
+  background: var(--t-superficie) !important;
+  border-right: 1px solid var(--t-borda) !important;
+  box-shadow: none !important;
+}
+
+/* A faixa do logo tinha cor FIXA (#090b0d) no operational-design.css, sem
+   variavel: com a sidebar clara ela ficava como uma tarja preta no topo — o
+   sintoma que aparecia no print. Mesmo caso do proprio .app-sidebar (#0d1012).
+   Cor fixa nao participa de tema; por isso precisa ser listada aqui. */
+.sidebar-logo {
+  background: var(--t-superficie) !important;
+  border-bottom: 1px solid var(--t-borda) !important;
+}
+
+.sidebar-brand-name {
+  color: var(--t-texto) !important;
+  -webkit-text-fill-color: var(--t-texto) !important; /* anula gradiente em texto */
+}
+
+.sidebar-brand-name::before { color: var(--t-acento) !important; }
+
+/* Formulario de parada: tambem tinha #111827 fixo. As cores POR ESTADO da
+   parada (.atendimento, .entregue, .ocorrencia, .pendente) ficam de fora de
+   proposito — ali a cor carrega informacao. */
+.tms-parada-form {
+  background: var(--t-superficie) !important;
+  border: 1px solid var(--t-borda) !important;
+}
+
+.app-sidebar .nav-tab {
+  background: transparent !important;
+  border: none !important;
+  border-radius: var(--t-r-sm) !important;
+  box-shadow: none !important;
+  color: var(--t-texto-2) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.app-sidebar .nav-tab:hover {
+  background: var(--t-hover) !important;
+  color: var(--t-texto) !important;
+}
+
+.app-sidebar .nav-tab.ativa,
+.app-sidebar .nav-tab[aria-selected="true"] {
+  background: var(--t-acento-fraco) !important;
+  color: var(--t-acento-forte) !important;
+  font-weight: 600 !important;
+}
+
+/* Emoji das abas em tamanho fixo, sem brilho: viram marcador, nao enfeite. */
+.tab-emoji {
+  filter: none !important;
+  font-size: 14px !important;
+  opacity: 0.85;
+}
+
+.sidebar-footer { border-top: 1px solid var(--t-borda) !important; }
+
+/* ---------- HEADER ---------- */
+.app-header {
+  background: var(--t-superficie) !important;
+  border-bottom: 1px solid var(--t-borda) !important;
+  box-shadow: none !important;
+}
+
+/* ---------- CONTEUDO ACOMPANHA O MENU ----------
+   O firebase-style.css fixa "padding: 0 32px 40px 292px" no body — 292px de
+   recuo esquerdo SEMPRE, independente do menu estar aberto. Com o menu
+   recolhido sobrava um vao de 292px onde ele estaria, e o conteudo nao usava a
+   largura ganha: era isso que aparecia como "falta responsividade".
+   O mesmo vale para o cabecalho, que compensa o recuo com margem negativa.
+
+   Abaixo de 1025px o menu vira sobreposicao (nao empurra o conteudo), entao a
+   regra so vale de 1025px para cima. */
+@media (min-width: 1025px) {
+  body {
+    padding-left: 32px !important;
+    transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.sidebar-aberto { padding-left: 292px !important; }
+
+  .app-header {
+    margin-left: -32px !important;
+    padding-left: 32px !important;
+    transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  body.sidebar-aberto .app-header {
+    margin-left: -292px !important;
+    padding-left: 292px !important;
+  }
+}
+
+/* Menu recolhido em tela larga: sem limite de largura o conteudo se espalha e
+   as linhas ficam longas demais para ler. Centraliza com um teto confortavel. */
+@media (min-width: 1600px) {
+  body:not(.sidebar-aberto) {
+    margin: 0 auto;
+    max-width: 1560px;
+  }
+}
+
+/* ---------- CABECALHO ----------
+   Sete arquivos JS diferentes injetam botao aqui (auth, tutorial, apresentacao,
+   pwa, theme, relogio...), cada um com seu prepend/append: a ordem acabava
+   sendo a de quem executasse primeiro, e o resultado quebrava em duas linhas
+   desalinhadas.
+
+   A ordem e imposta por "order" do flexbox — visual, sem mexer no DOM. Assim
+   nenhum daqueles scripts precisa saber da existencia dos outros, e nada
+   quebra se um deles mudar.
+
+   Agrupado por natureza, da esquerda para a direita:
+     10 relogio          -> referencia de tempo
+     20 avisos           -> sinos com badge, o que pede acao
+     30 estado           -> online / ultima atualizacao
+     40 ferramentas      -> tema, tutorial, apresentacao, instalar, torre
+     50 admin            -> reiniciar servidor
+     90 sessao           -> quem sou eu, usuarios, sair (sempre no fim)
+*/
+.app-header-actions {
+  align-items: center;
+  display: flex;
+  /* flex:1 faz o bloco ocupar a faixa toda entre o botao de menu e a borda.
+     Sem isso ele encolhia ate o conteudo e o "margin-right:auto" do relogio
+     nao tinha espaco para empurrar nada — ficava tudo amontoado a direita com
+     um vao morto depois do botao de menu. */
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 4px;              /* 4px e nao 6: com 15 itens, cada 1px vale 15px de largura */
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+/* Botao do cabecalho e mais estreito que o padrao do sistema: aqui a disputa e
+   por largura, e o alvo de clique continua com 32px de altura. */
+.app-header-actions .btn-ghost,
+.app-header-actions .btn-sm,
+.app-header-actions > button,
+.app-header-actions > a {
+  padding-left: 9px !important;
+  padding-right: 9px !important;
+}
+
+.app-header-actions > * { order: 40; }        /* padrao: ferramenta */
+
+/* O relogio ancora na ESQUERDA (margin-right:auto empurra o resto para a
+   direita). Antes tudo ficava amontoado a direita com um vao enorme depois do
+   botao de menu — espaco morto de um lado e aperto do outro. */
+#relogioCabecalho { order: 10; margin-right: auto; }
+
+#alertasSino,
+#sinoSetores,
+#sinoTipos,
+#sinoLixeira { order: 20; }
+
+#serverStatusBadge,
+#ultimaAtualizacaoLabel { order: 30; }
+
+#btnReiniciarServidor { order: 50; }
+
+#authUsuarioLogado { order: 90; margin-left: 6px; }
+#authGerenciarBtn { order: 91; }
+.app-header-actions > button[onclick*="authSair"] { order: 92; }
+
+/* Os quatro sinos viram um bloco so, sem respiro entre eles: sao a mesma
+   familia de aviso e liam como quatro botoes soltos. */
+#alertasSino, #sinoSetores, #sinoTipos, #sinoLixeira {
+  border-radius: 0 !important;
+  border-right-width: 0 !important;
+  margin: 0 !important;
+}
+#alertasSino { border-radius: var(--t-r-sm) 0 0 var(--t-r-sm) !important; }
+#sinoLixeira {
+  border-radius: 0 var(--t-r-sm) var(--t-r-sm) 0 !important;
+  border-right-width: 1px !important;
+}
+
+/* "Atualizado 11:37:08" ao lado de um relogio marcando 11:37:12 vira ruido:
+   dois horarios competindo, e o que importa ja esta no relogio. Fica so o
+   ponto de status, que diz se a conexao esta viva. */
+#ultimaAtualizacaoLabel { display: none !important; }
+
+/* Ferramentas esporadicas ficam menores, mas com o rotulo VISIVEL.
+   Tentei deixa-las so com o icone via "font-size: 0" + ::first-letter: o
+   ::first-letter nao sobrevive ao font-size zero do pai, e "Instalar app" nem
+   emoji tem — o resultado foram tres botoes vazios no cabecalho. Botao mudo e
+   pior do que botao largo. */
+#pwaInstalarBtn,
+#apresentacaoBtn,
+#tutorialBtn {
+  font-size: 11.5px !important;
+  padding: 6px 10px !important;
+}
+
+/* A conta que explica a quebra de linha: numa janela de 1357px sobram 931px
+   para o cabecalho, e os 15 itens somam 1387px. Nao cabe — e cortar so os
+   botoes esporadicos (287px) ainda deixaria 169px sobrando. Por isso a pilula
+   do usuario tambem encolhe: "Rafael Mendes | MASTER" ocupava 197px, mais
+   que qualquer botao. */
+/* O rotulo ja vem curto do auth.js ("Joao D. | MASTER"), entao o teto so serve
+   de trava para nome fora do padrao. Elemento nao cresce ate o max-width — ele
+   ocupa o que o texto precisa. */
+.auth-user-pill {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* O que aperta o cabecalho nao e a largura da JANELA, e o espaco que sobra
+   para ele. Com o menu lateral aberto o body ganha 292px de recuo, entao a
+   mesma janela tem 292px a menos disponiveis.
+   Por isso cada limiar aparece duas vezes: o valor "cru" (menu recolhido) e o
+   valor + 292 (menu aberto). Usar so a largura da janela criava justamente o
+   que aparecia na tela: recolher o menu dava mais espaco, os botoes voltavam,
+   e o cabecalho quebrava em duas linhas.
+   Referencia: 240px de menu + 28px de folga + 24px de respiro = 292. */
+
+/* --- ferramentas esporadicas: saem primeiro ---
+   Apresentacao e Tutorial estao no menu lateral e "Instalar app" e acao de uma
+   vez so. Some o botao, nao a funcao. */
+/* 1700 e nao 1500: medido, com os tres botoes o cabecalho pede 1228px, e uma
+   janela de 1600px so oferece 1190px. O limiar tem de estar acima da largura
+   onde a conta ja nao fecha. */
+@media (max-width: 1700px) {
+  #pwaInstalarBtn,
+  #apresentacaoBtn,
+  #tutorialBtn { display: none !important; }
+}
+@media (max-width: 1992px) {
+  body.sidebar-aberto #pwaInstalarBtn,
+  body.sidebar-aberto #apresentacaoBtn,
+  body.sidebar-aberto #tutorialBtn { display: none !important; }
+}
+
+/* --- relogio: perde a data, mantem a hora (a data vai para o title) --- */
+@media (max-width: 1450px) {
+  .relogio-data { display: none; }
+  .relogio { padding: 6px 9px; }
+}
+@media (max-width: 1742px) {
+  body.sidebar-aberto .relogio-data { display: none; }
+  body.sidebar-aberto .relogio { padding: 6px 9px; }
+}
+
+/* --- ultimo aperto: nome encurta e o status vira so a bolinha ---
+   1320 e nao 1200: em 1280px recolhido a conta dava 869px para 870px de espaco.
+   Passar com 1px de folga e o mesmo que nao passar — qualquer arredondamento
+   joga o botao Sair para a linha de baixo. */
+@media (max-width: 1320px) {
+  .auth-user-pill { max-width: 132px; }   /* cabe "Joao D. | MASTER" inteiro */
+  #serverStatusBadge { font-size: 0 !important; padding: 0 4px !important; }
+}
+@media (max-width: 1612px) {
+  body.sidebar-aberto .auth-user-pill { max-width: 132px; }
+  body.sidebar-aberto #serverStatusBadge { font-size: 0 !important; padding: 0 4px !important; }
+}
+
+.auth-user-pill {
+  background: var(--t-acento-fraco) !important;
+  border: 1px solid transparent !important;
+  border-radius: 999px !important;
+  color: var(--t-acento-forte) !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  padding: 6px 12px !important;
+  white-space: nowrap;
+}
+
+
+/* ---------- AVISO DE VERSAO NOVA ----------
+   Canto inferior, discreto: aparece so quando ha trabalho em andamento e a
+   pagina NAO pode se recarregar sozinha. Nao bloqueia nada. */
+.atualizacao-barra {
+  align-items: center;
+  background: var(--t-acento);
+  border-radius: var(--t-r);
+  bottom: 18px;
+  box-shadow: var(--t-sombra-2);
+  color: #fff;
+  display: flex;
+  font-size: 13px;
+  gap: 10px;
+  left: 18px;
+  padding: 10px 12px 10px 16px;
+  position: fixed;
+  z-index: 99998;
+}
+
+.atualizacao-btn {
+  background: #fff !important;
+  border: none !important;
+  border-radius: var(--t-r-sm) !important;
+  color: var(--t-acento) !important;
+  cursor: pointer;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 5px 12px !important;
+}
+
+.atualizacao-x {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  cursor: pointer;
+  font-size: 14px !important;
+  line-height: 1;
+  padding: 2px 4px !important;
+}
+.atualizacao-x:hover { color: #fff !important; }
+
+/* ---------- FAIXA DE MANUTENCAO ----------
+   Fixa no topo e acima de tudo (inclusive dos modais, z-index alto): o aviso
+   perde a serventia se um dialogo o cobrir. O body ganha um padding igual a
+   altura da faixa para ela nao tapar o cabecalho. */
+.manutencao-faixa {
+  align-items: center;
+  background: var(--t-erro);
+  color: #fff;
+  display: flex;
+  font-size: 13px;
+  gap: 10px;
+  justify-content: center;
+  left: 0;
+  padding: 9px 16px;
+  position: fixed;
+  right: 0;
+  text-align: center;
+  top: 0;
+  z-index: 99999;
+}
+
+/* Para quem LIGOU, o tom e de lembrete, nao de alarme. */
+.manutencao-faixa-master {
+  background: var(--t-alerta);
+  color: #fff;
+}
+
+.manutencao-icone { font-size: 15px; }
+
+.manutencao-btn {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  border-radius: var(--t-r-sm) !important;
+  color: #fff !important;
+  cursor: pointer;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 4px 12px !important;
+}
+.manutencao-btn:hover { background: rgba(255, 255, 255, 0.32) !important; }
+
+body.com-manutencao { padding-top: 38px !important; }
+
+/* ---------- RELOGIO DO CABECALHO ----------
+   Hora em fonte tabular para os digitos nao dancarem a cada segundo. */
+.relogio {
+  align-items: center;
+  background: var(--t-superficie-2);
+  border: 1px solid var(--t-borda);
+  border-radius: var(--t-r-sm);
+  display: inline-flex;
+  gap: 8px;
+  line-height: 1;
+  min-height: 36px;
+  padding: 6px 11px;
+  white-space: nowrap;
+}
+
+.relogio-hora {
+  color: var(--t-texto);
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5px;
+}
+
+.relogio-data {
+  color: var(--t-texto-2);
+  font-size: 11px;
+  text-transform: capitalize;
+}
+
+/* Relogio da maquina fora de hora: ambar, sem alarme — e informacao, nao erro. */
+.relogio-fora {
+  background: var(--t-alerta-fraco);
+  border-color: var(--t-alerta);
+}
+.relogio-fora .relogio-hora { color: var(--t-alerta); }
+
+/* ---------- SUPERFICIES (cards, secoes, KPIs) ---------- */
+.section-shell,
+.quick-actions,
+.card,
+.bloco-secao,
+.tms-card,
+.tms-viagem,
+.tms-kpi,
+.tms-chart-card,
+.historico-card,
+.historico-bloco,
+.dashboard-card,
+.report-card,
+.torre-section-card,
+.atraso-card,
+.agnd-mini,
+.ot-bloco {
+  background: var(--t-superficie) !important;
+  background-image: none !important;
+  border: 1px solid var(--t-borda) !important;
+  border-radius: var(--t-r) !important;
+  box-shadow: var(--t-sombra) !important;
+}
+
+/* O realce de hover destes cartoes esta na secao MOVIMENTO, la em cima. */
+
+/* Enfeites de canto/brilho que varios cards desenham com ::before/::after. */
+.card::before,
+.card::after,
+.tms-kpi::before,
+.section-shell::before { display: none !important; }
+
+.section-head {
+  border-bottom: 1px solid var(--t-borda) !important;
+  padding-bottom: 12px !important;
+}
+
+.section-head h2 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+.tms-subtitle,
+.tms-meta { color: var(--t-texto-2) !important; }
+
+/* ---------- BOTOES ---------- */
+button,
+.btn-blue,
+.btn-green,
+.btn-red,
+.btn-ghost,
+.btn-purple {
+  border-radius: var(--t-r-sm) !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-shadow: none !important;
+  text-transform: none !important;
+  transition: background 0.12s, border-color 0.12s !important;
+}
+
+.btn-blue {
+  background: var(--t-acento) !important;
+  border: 1px solid var(--t-acento) !important;
+  color: #fff !important;
+}
+.btn-blue:hover { background: var(--t-acento-forte) !important; }
+
+.btn-green {
+  background: var(--t-ok) !important;
+  border: 1px solid var(--t-ok) !important;
+  color: #fff !important;
+}
+
+.btn-red {
+  background: var(--t-erro) !important;
+  border: 1px solid var(--t-erro) !important;
+  color: #fff !important;
+}
+
+.btn-ghost {
+  background: transparent !important;
+  border: 1px solid var(--t-borda-forte) !important;
+  color: var(--t-texto-2) !important;
+}
+.btn-ghost:hover {
+  background: var(--t-hover) !important;
+  color: var(--t-texto) !important;
+}
+
+.btn-sm { font-size: 12px !important; }
+
+/* ---------- FORMULARIOS ---------- */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background: var(--t-superficie) !important;
+  border: 1px solid var(--t-borda-forte) !important;
+  border-radius: var(--t-r-sm) !important;
+  box-shadow: none !important;
+  color: var(--t-texto) !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--t-acento) !important;
+  box-shadow: 0 0 0 3px var(--t-acento-fraco) !important;
+  outline: none !important;
+}
+
+input::placeholder,
+textarea::placeholder { color: var(--t-texto-3) !important; }
+
+label {
+  color: var(--t-texto-2) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+
+/* Cartoes de multipla escolha: os 111 do formulario dominavam a tela. */
+.multi-check-card {
+  background: var(--t-superficie) !important;
+  border: 1px solid var(--t-borda) !important;
+  border-radius: var(--t-r-sm) !important;
+  color: var(--t-texto-2) !important;
+  font-weight: 500 !important;
+}
+
+.multi-check-card:has(input:checked) {
+  background: var(--t-acento-fraco) !important;
+  border-color: var(--t-acento) !important;
+  color: var(--t-acento-forte) !important;
+}
+
+/* ---------- TABELAS ---------- */
+table { border-collapse: collapse !important; }
+
+th {
+  background: var(--t-superficie-2) !important;
+  color: var(--t-texto-2) !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.4px !important;
+  text-transform: uppercase !important;
+}
+
+td {
+  border-bottom: 1px solid var(--t-borda) !important;
+  color: var(--t-texto) !important;
+}
+
+tbody tr:hover { background: var(--t-hover) !important; }
+
+/* ---------- STATUS ---------- */
+/* Cor passa a significar estado, e so isso. */
+.badge,
+.tab-badge-nav,
+.fr-badge,
+.rp-badge {
+  background: var(--t-acento) !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+}
+
+.status-ok, .ok      { color: var(--t-ok) !important; }
+.status-alerta       { color: var(--t-alerta) !important; }
+.status-erro, .erro  { color: var(--t-erro) !important; }
+
+/* ---------- MODAIS ---------- */
+.modal,
+.modal-content,
+.tms-modal {
+  background: var(--t-superficie) !important;
+  border: 1px solid var(--t-borda) !important;
+  border-radius: var(--t-r) !important;
+  box-shadow: var(--t-sombra-2) !important;
+}
+
+/* ---------- GRAFICOS NAO ESTOURAM MAIS A TELA ----------
+   A aba TMS gerava rolagem horizontal em qualquer largura (medido: +435px em
+   1024, +455px em 1280, +135px em 1600). O Chart.js ja estava com
+   "responsive: true"; o problema era CSS.
+
+   Item de grid e de flex nasce com min-width:auto, ou seja, nao encolhe abaixo
+   do conteudo. Como o canvas tem largura propria, o cartao do grafico empurrava
+   o card inteiro para fora da tela em vez de se ajustar. min-width:0 e o que
+   autoriza encolher.
+
+   Vale para qualquer grid/flex do sistema, e nao so para o TMS: e o mesmo
+   motivo por tras da maioria das rolagens horizontais que aparecem por aqui. */
+.tms-charts-row,
+.tms-chart-card,
+.tms-chart-card > div,
+.tms-kpis,
+.tms-form-grid,
+.section-shell,
+.card {
+  min-width: 0;
+}
+
+.tms-chart-card { overflow: hidden; }
+
+/* O canvas obedece ao pai em vez de ditar a largura. */
+.tms-chart-card canvas,
+.section-shell canvas,
+canvas[id^="tmsChart"] {
+  max-width: 100% !important;
+}
+
+/* Abaixo de 900px os dois graficos lado a lado ficam estreitos demais para
+   qualquer leitura; empilham. (O CSS antigo so fazia isso abaixo de 640px.) */
+@media (max-width: 900px) {
+  .tms-charts-row { grid-template-columns: 1fr !important; }
+}
+
+/* ---------- BACKLOG (secao nova do dashboard) ---------- */
+.backlog-cartao {
+  background: var(--t-superficie) !important;
+  border: 1px solid var(--t-borda) !important;
+}
+.backlog-cartao:hover { background: var(--t-hover) !important; }
+.backlog-cartao.ativo { border-color: var(--t-acento) !important; }

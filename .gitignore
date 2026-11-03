@@ -1,0 +1,36 @@
+# ===== Dependências e artefatos =====
+node_modules/
+logs/
+backups/
+# Planilhas geradas pelo servidor (relatorio semanal) — dados, nao codigo
+relatorios/
+ciberseguranca-java/out/
+*.log
+tools/cloudflared/
+
+# ===== Python (ambiente virtual de analise/) =====
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# ===== SEGREDOS — NUNCA versionar =====
+# Chave de decriptação do dotenvx (quem tem isso lê todo o .env cifrado)
+.env.keys
+# .env e qualquer cópia/backup dele (podem conter segredos em texto)
+.env
+.env.*
+!.env.example
+# Certificados e chaves privadas TLS
+back/certs-desativado/
+*.key
+*.pem
+*.pfx
+
+# ===== Cópias .bak (versionamento por cópia — o git substitui isso) =====
+*.bak
+*.bak-*
+
+# Repo git abandonado embutido (scaffold, so um README)
+LOGISCPOPE/

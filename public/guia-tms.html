@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia rápido do TMS</title>
+<style>
+  :root { --bg: #ffffff; --texto: #111827; --suave: #4b5563; --borda: #d1d5db; --destaque: #f3f4f6; --verde: #15803d; --azul: #1d4ed8; }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) { --bg: #0f172a; --texto: #e5e7eb; --suave: #9ca3af; --borda: #334155; --destaque: #1e293b; --verde: #4ade80; --azul: #93c5fd; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--texto); font: 15px/1.5 Arial, Helvetica, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 20px 16px 40px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--suave); margin: 0 0 18px; }
+  ol { padding-left: 0; list-style: none; counter-reset: passo; margin: 0; }
+  li { counter-increment: passo; display: grid; grid-template-columns: 36px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--borda); }
+  li::before { content: counter(passo); width: 30px; height: 30px; border-radius: 50%; background: var(--azul); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  b.botao { background: var(--destaque); border: 1px solid var(--borda); border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+  .quando { color: var(--suave); font-size: 13px; }
+  .regras { margin-top: 18px; padding: 12px 14px; border: 1px solid var(--borda); border-left: 4px solid var(--verde); border-radius: 8px; background: var(--destaque); }
+  .regras h2 { font-size: 15px; margin: 0 0 6px; }
+  .regras ul { margin: 0; padding-left: 18px; }
+  .imprimir { margin-top: 16px; }
+  @media print { .imprimir { display: none; } body { font-size: 13px; } li { padding: 6px 0; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Guia rápido do TMS — o dia da viagem</h1>
+  <p class="sub">Um clique na hora vale mais que digitar depois: é isso que faz a previsão de chegada, os alertas e a jornada funcionarem.</p>
+
+  <ol>
+    <li><div><b>Motorista chegou na fábrica</b> → no card da viagem, clique <b class="botao">🧑 Chegou</b>.
+      <div class="quando">Substitui a planilha do malote. A viagem passa para “Carregando”.</div></div></li>
+    <li><div><b>Capa da frente</b> → clique <b class="botao">🖨️ Capa</b>, digite o <b>nº do lacre</b> e imprima.
+      <div class="quando">Lojas, horários, ramal, celular, retirada, caixa vazia e docas já vêm preenchidos. Só o lacre é manual.</div></div></li>
+    <li><div><b>Caminhão saiu da fábrica</b> → clique <b class="botao">🚚 Saiu agora</b> <u>no momento da saída</u>.
+      <div class="quando">O sistema grava a hora sozinho, põe a viagem “Em rota” e preenche a saída nos registros.</div></div></li>
+    <li><div><b>Saiu de cada loja</b> → logo em seguida, lance o registro da loja:
+      sem problema, use <b class="botao">✅ Entregue sem problema</b> (chegada, início e saída no próprio card);
+      com problema, use <b class="botao">Lançar registro</b>.
+      <div class="quando">Meta: registro em até <b>30 minutos</b> depois de sair da loja, e na ordem da rota.</div></div></li>
+    <li><div><b>Fique de olho no sino 🚨</b> durante o dia.
+      <div class="quando">“Vai chegar atrasado” (a próxima loja vai passar do horário), “Jornada em 10h30/11h30/12h” e, a partir das 17h, “Fechamento: loja sem registro”.</div></div></li>
+    <li><div><b>Caminhão voltou à fábrica</b> → clique <b class="botao">🏁 Voltou</b>.
+      <div class="quando">Finaliza a viagem e grava o Tempo de Rota (jornada e hora extra) sozinho.</div></div></li>
+    <li><div><b>Esqueceu de clicar na hora?</b> → use o <b class="botao">🕒</b> ao lado do botão e informe o horário certo.
+      <div class="quando">Fica marcado com ✎ (horário digitado). Melhor do que deixar em branco — mas o ideal é o clique na hora.</div></div></li>
+  </ol>
+
+  <div class="regras">
+    <h2>Regras que o sistema usa</h2>
+    <ul>
+      <li><b>Jornada:</b> até 12h de trabalho (8h normais + 4h extra) + 1h de almoço. Ex.: saiu 05:15 → limite 18:15.</li>
+      <li><b>Horário da loja:</b> vem da programação/cadastro; loja sem horário = “Horário normal”.</li>
+      <li><b>Viagem fecha sozinha</b> quando todas as lojas têm registro e o caminhão volta (ou no dia seguinte).</li>
+      <li><b>O painel “📊 Uso do TMS”</b> (aba TMS) mostra como a equipe está indo: saídas pelo botão, tempo até o registro e lojas sem registro.</li>
+    </ul>
+  </div>
+
+  <div class="imprimir"><button type="button" onclick="window.print()">🖨️ Imprimir este guia</button></div>
+</main>
+</body>
+</html>

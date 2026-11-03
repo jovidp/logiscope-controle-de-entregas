@@ -1,0 +1,103 @@
+/* ================================================================
+   SOBRIEDADE VISUAL
+   ----------------------------------------------------------------
+   Tira o excesso de cor e degrade da tela. O problema nao era cada
+   peca isolada: era o conjunto. Na Secao 6 havia NOVE blocos
+   seguidos, cada um de uma cor (azul, roxo, ciano, violeta, ambar,
+   verde, rosa, azul, ambar), cada um com o titulo pintado na cor do
+   bloco. Cor demais deixa de informar e vira ruido — quando tudo se
+   destaca, nada se destaca.
+
+   O alvo nao foi inventado aqui: 10 titulos de painel do proprio
+   index.html ja usavam `var(--text-heading)` e o bloco do checklist
+   ja usava fundo `rgba(255,255,255,0.02)` com `border: var(--border)`.
+   Este arquivo so estende esse padrao que ja existia ao resto.
+
+   POR QUE TUDO COM !important E SELETOR DE [style]:
+   as cores estao em atributo style inline no HTML. Sem !important a
+   folha de estilo perde para o inline; sem casar pelo texto do style
+   nao ha como alcancar elementos que nao tem classe. Feio, mas e o
+   que permite fazer isso SEM tocar no index.html — e mexer no
+   index.html em producao hoje depende de permissao.
+
+   PARA REVERTER: remova a linha <link> deste arquivo no index.html.
+   Nada mais precisa ser desfeito.
+
+   O QUE FICOU DE FORA DE PROPOSITO:
+   - Emoji e subtitulo explicativo: exigem editar o HTML.
+   - Vermelho/verde de AVISO (ex.: "Sem justificativa -> despontua"):
+     esses 6 usos de var(--vermelho) tem assinatura de style
+     diferente da dos titulos de painel e nao sao alcancados aqui.
+     Cor com significado fica; cor de enfeite sai.
+   ================================================================ */
+
+/* ---------- 1. TITULOS DE PAINEL ----------
+   Os 8 titulos de 0.8rem e os 4 de 0.78rem que vinham coloridos
+   passam a usar a cor de titulo normal. Os 10 que ja eram
+   var(--text-heading) nao mudam — a regra so os reafirma. */
+div[style*="font-size: 0.78rem; font-weight: 700; color:"],
+div[style*="font-size: 0.8rem; font-weight: 700; color:"] {
+  color: var(--text-heading) !important;
+}
+
+/* ---------- 2. PAINEIS TINGIDOS ----------
+   Os 16 fundos rgba(cor, 0.04) com borda rgba(cor, 0.15) viram um
+   fundo unico e uma borda unica. A separacao entre blocos passa a
+   ser feita por espaco e borda, nao por cor. */
+div[style*="background: rgba("][style*=", 0.04)"] {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-color: var(--border) !important;
+}
+
+/* ---------- 3. TEXTO COM DEGRADE ----------
+   Os 11 titulos em `background-clip: text` (o "Nova Ocorrencia de
+   Entrega" e companhia) viram texto solido. Alem de datado, degrade
+   em texto piora a legibilidade: a ponta clara do gradiente perde
+   contraste contra o fundo. */
+[style*="background-clip: text"] {
+  background: none !important;
+  -webkit-text-fill-color: currentColor !important;
+  color: var(--text-heading) !important;
+}
+
+/* ---------- 4. FAIXAS COM DEGRADE ----------
+   Cabecalhos de cartao que iam de azul a roxo viram fundo chapado.
+   Pega so os degrades de duas cores translucidas (o padrao
+   decorativo); barra de progresso e afins nao usam essa forma. */
+div[style*="background: linear-gradient(135deg, rgba("] {
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* ---------- 5. BORDA EM DEGRADE DO FORMULARIO ----------
+   style.css:866 monta uma borda azul->roxo no #form pelo truque de
+   dois background-image com background-clip: padding-box, border-box.
+   Como as laterais usam var(--border), que e translucido, o degrade
+   vaza por elas e o cartao inteiro fica com um anel violeta — o
+   detalhe que mais dava "cara de IA" mesmo depois de tirar o resto.
+   Volta a ser uma borda igual a de qualquer outro cartao. */
+#form,
+#formOcorrenciaIndividual {
+  background-image: none !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* ---------- 6. TITULOS DE BLOCO DO CARD DE HISTORICO ----------
+   O card do historico e montado em JS (script-3-historico.js), com
+   estilo inline SEM espaco depois dos dois-pontos — padrao diferente
+   do index.html, por isso as regras acima nao o alcancavam e o card
+   continuava com "Caixas e Retiradas" em rosa, "Conferencia de
+   Volume" em ciano, "Tempos Calculados" em ambar. Sao 7 titulos
+   coloridos; viram todos apoio neutro, deixando o destaque para o
+   dado em si. */
+.historico-card p[style*="font-weight:900"] {
+  color: var(--text-muted) !important;
+}
+
+/* ---------- 7. BADGES NUMERADOS DE SECAO ----------
+   O quadradinho com o numero da secao vinha em uma cor por secao —
+   o arco-iris comecava ali. Vira monocromatico: o numero informa a
+   ordem, e ordem nao precisa de cor. */
+div[style*="width: 26px; height: 26px; border-radius: 8px"] {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--text-heading) !important;
+}

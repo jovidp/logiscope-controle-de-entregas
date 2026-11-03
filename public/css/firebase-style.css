@@ -1,0 +1,480 @@
+/*
+   Interface clara inspirada em consoles SaaS modernos.
+   Mantem os mesmos componentes e classes do sistema; altera apenas a camada
+   visual para deixar a navegação mais limpa, espaçosa e fácil de escanear.
+*/
+
+:root,
+html[data-tema="claro"] {
+  color-scheme: light;
+  --bg-base: #f8f9fc;
+  --bg-elevated: #ffffff;
+  --bg-overlay: #f1f3f8;
+  --bg-hover: #f2f3f8;
+  --bg-glass: rgba(255, 255, 255, 0.88);
+  --border: #e1e4eb;
+  --border-md: #cfd4de;
+  --border-glow: rgba(103, 58, 183, 0.22);
+  --text-primary: #202124;
+  --text-secondary: #667085;
+  --text-muted: #8b93a1;
+  --text-heading: #202124;
+  --azul: #6f42c1;
+  --azul-dark: #59339d;
+  --azul-light: #f0ebff;
+  --verde: #168b65;
+  --verde-dark: #0f7454;
+  --verde-light: #e8f7f1;
+  --vermelho: #d93025;
+  --verm-dark: #b3261e;
+  --verm-light: #fcebea;
+  --roxo: #7e57c2;
+  --roxo-dark: #673ab7;
+  --roxo-light: #f0ebff;
+  --amarelo: #b26a00;
+  --ciano: #1686a8;
+  --shadow-sm: 0 1px 2px rgba(27, 31, 43, 0.04);
+  --shadow-md: 0 4px 14px rgba(27, 31, 43, 0.07);
+  --shadow-lg: 0 16px 40px rgba(27, 31, 43, 0.13);
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
+  --r-2xl: 20px;
+  --font-sans: "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body,
+html[data-tema="claro"] body {
+  max-width: none;
+  padding: 0 32px 40px 292px;
+  gap: 0;
+  background: #f8f9fc;
+  color: var(--text-secondary);
+  line-height: 1.55;
+}
+
+body::before {
+  display: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+.app-title,
+.sidebar-brand-name {
+  color: var(--text-heading);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+  text-transform: none;
+  letter-spacing: -0.025em;
+}
+
+h1 { font-size: 1.7rem; }
+h2 { font-size: 1.05rem; border-bottom-color: var(--border); }
+
+.app-sidebar {
+  width: 240px;
+  background: #ffffff;
+  border-right: 1px solid #e1e4eb;
+  box-shadow: 2px 0 10px rgba(27, 31, 43, 0.025);
+}
+
+.sidebar-logo {
+  min-height: 68px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef0f4;
+}
+
+.sidebar-logo svg {
+  width: 32px;
+  height: 32px;
+}
+
+.sidebar-brand-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sidebar-nav {
+  gap: 2px;
+  padding: 18px 12px;
+}
+
+.app-sidebar .nav-tab {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: #667085;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.app-sidebar .nav-tab:hover {
+  background: #f5f3fb;
+  color: #4b3a70;
+}
+
+.app-sidebar .nav-tab.ativa {
+  background: #eee9fb;
+  border-color: #e5ddfa;
+  color: #673ab7;
+  font-weight: 700;
+}
+
+.app-sidebar .tab-emoji {
+  width: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.sidebar-link-externo {
+  border-color: #cde9df !important;
+  background: #effaf6 !important;
+  color: #168b65 !important;
+}
+
+.sidebar-footer {
+  padding: 12px 16px 16px;
+  border-top-color: #eef0f4;
+  color: #9aa1ad;
+}
+
+.sidebar-footer strong {
+  color: #667085;
+}
+
+.app-header {
+  top: 0;
+  margin: 0 -32px 30px -292px;
+  padding-left: 292px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e1e4eb;
+  box-shadow: 0 1px 3px rgba(27, 31, 43, 0.03);
+  backdrop-filter: blur(10px);
+}
+
+.app-header-inner {
+  min-height: 68px;
+  padding: 12px 32px 12px 0;
+}
+
+.sidebar-toggle {
+  width: 36px;
+  height: 36px;
+  border-color: #e1e4eb;
+  background: #fff;
+  color: #667085;
+  font-size: 17px;
+}
+
+.sidebar-toggle:hover {
+  background: #f5f3fb;
+  border-color: #d9cdf4;
+}
+
+.app-header-actions {
+  gap: 8px;
+  padding-bottom: 0;
+}
+
+.app-header-actions button,
+.app-header-actions a {
+  border-color: #e1e4eb !important;
+  background: #fff !important;
+  color: #667085 !important;
+  box-shadow: none !important;
+}
+
+.app-header-actions .btn-blue,
+.app-header-actions .btn-blue:hover {
+  background: #673ab7 !important;
+  border-color: #673ab7 !important;
+  color: #fff !important;
+}
+
+.aba {
+  animation: firebaseFadeIn 0.18s ease-out;
+}
+
+@keyframes firebaseFadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-shell,
+.quick-actions,
+.card,
+.bloco-secao,
+.tms-card,
+.tms-viagem,
+.tms-kpi,
+.tms-chart-card,
+.historico-card,
+.dashboard-card,
+.report-card,
+.ranking-panel,
+.ranking-chart-grid > div,
+.torre-section-card {
+  background: #fff !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--r-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.section-shell,
+.quick-actions {
+  padding: 22px;
+}
+
+.section-shell:hover,
+.card:hover,
+.tms-card:hover,
+.tms-viagem:hover {
+  border-color: #d8cbed !important;
+  box-shadow: 0 4px 14px rgba(103, 58, 183, 0.07) !important;
+}
+
+.section-head {
+  margin-bottom: 18px;
+}
+
+.section-head h2,
+.quick-actions h2 {
+  color: #202124;
+}
+
+button,
+.btn-blue,
+.btn-green,
+.btn-red,
+.btn-purple,
+.btn-gray,
+.btn-ghost,
+input,
+select,
+textarea,
+.select-search-input,
+.multi-select-btn {
+  border-radius: 8px !important;
+  font-family: inherit;
+}
+
+button {
+  min-height: 36px;
+  box-shadow: none !important;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.btn-blue {
+  background: #673ab7 !important;
+  border-color: #673ab7 !important;
+  color: #fff !important;
+}
+
+.btn-blue:hover { background: #59339d !important; }
+
+.btn-ghost,
+.btn-gray,
+.theme-toggle {
+  background: #fff !important;
+  border: 1px solid #d8dce5 !important;
+  color: #667085 !important;
+}
+
+input,
+select,
+textarea,
+.select-search-input,
+.multi-select-btn {
+  min-height: 38px;
+  background: #fff !important;
+  border: 1px solid #d8dce5 !important;
+  color: #202124 !important;
+  box-shadow: none !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.select-search-input:focus {
+  border-color: #8d6dcc !important;
+  box-shadow: 0 0 0 3px rgba(103, 58, 183, 0.12) !important;
+  outline: none;
+}
+
+label {
+  color: #667085;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+table,
+.torre-table,
+#rankingTabela {
+  border-color: var(--border);
+}
+
+/* `th` continua SEM escopo de proposito: outra folha ja o sobrescreve nos dois
+   temas (no escuro computa rgb(16,24,39); no claro o cabecalho e preto). Se
+   escopar aqui, a especificidade sobe e essa outra regra perde — testado: o
+   cabecalho preto do tema claro virou cinza claro. */
+th {
+  background: #f7f8fb !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: #667085 !important;
+  font-size: 10px !important;
+}
+
+/* COR de tabela: so no tema claro. Sem este escopo, `background:#fff` pintava
+   de branco as tabelas do tema ESCURO (Atrasos, Historico de Rotas e qualquer
+   tabela nova) — ver o comentario em public/html/index.html, onde uma tabela ja
+   fugia disso na mao com `background: transparent`. A cor do `td` vai junto:
+   deixar #52606f global poria texto cinza-escuro sobre fundo escuro. */
+html[data-tema="claro"] table,
+html[data-tema="claro"] .torre-table,
+html[data-tema="claro"] #rankingTabela {
+  background: #fff;
+}
+
+html[data-tema="claro"] td {
+  border-bottom-color: #edf0f4 !important;
+  color: #52606f;
+}
+
+html[data-tema="claro"] tbody tr:hover td { background: #faf8ff !important; }
+
+.page-header {
+  margin-bottom: 20px;
+}
+
+.app-footer {
+  border-top-color: var(--border);
+  color: #8b93a1;
+}
+
+@media (max-width: 1024px) {
+  body,
+  html[data-tema="claro"] body {
+    padding: 0 16px 28px;
+  }
+
+  .app-header {
+    margin: 0 -16px 22px;
+    padding-left: 0;
+  }
+
+  .app-header-inner {
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-shell,
+  .quick-actions {
+    padding: 16px !important;
+  }
+}
+
+/* O seletor de tema continua funcionando: o claro e o escuro compartilham
+   a mesma hierarquia visual, mudando apenas as superfícies e o contraste. */
+html[data-tema="escuro"] {
+  color-scheme: dark;
+  --bg-base: #0f172a;
+  --bg-elevated: #141e2e;
+  --bg-overlay: #1a2538;
+  --bg-hover: #1f2d42;
+  --border: rgba(255, 255, 255, 0.1);
+  --border-md: rgba(255, 255, 255, 0.16);
+  --text-primary: #e8f0fe;
+  --text-secondary: #9aacbf;
+  --text-muted: #71839b;
+  --text-heading: #f0f6ff;
+  --azul: #a78bfa;
+  --azul-dark: #8b5cf6;
+  --azul-light: rgba(167, 139, 250, 0.12);
+}
+
+html[data-tema="escuro"] body {
+  background: #0f172a;
+  color: var(--text-secondary);
+}
+
+html[data-tema="escuro"] .app-sidebar,
+html[data-tema="escuro"] .sidebar-logo,
+html[data-tema="escuro"] .app-header {
+  background: #141e2e;
+  border-color: var(--border);
+}
+
+html[data-tema="escuro"] .app-sidebar .nav-tab {
+  color: #9aacbf;
+}
+
+html[data-tema="escuro"] .app-sidebar .nav-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f0f6ff;
+}
+
+html[data-tema="escuro"] .app-sidebar .nav-tab.ativa {
+  background: rgba(167, 139, 250, 0.14);
+  border-color: rgba(167, 139, 250, 0.3);
+  color: #c4b5fd;
+}
+
+html[data-tema="escuro"] .section-shell,
+html[data-tema="escuro"] .quick-actions,
+html[data-tema="escuro"] .card,
+html[data-tema="escuro"] .bloco-secao,
+html[data-tema="escuro"] .tms-card,
+html[data-tema="escuro"] .tms-viagem,
+html[data-tema="escuro"] .tms-kpi,
+html[data-tema="escuro"] .tms-chart-card,
+html[data-tema="escuro"] .historico-card,
+html[data-tema="escuro"] .dashboard-card,
+html[data-tema="escuro"] .report-card,
+html[data-tema="escuro"] .ranking-panel,
+html[data-tema="escuro"] .ranking-chart-grid > div,
+html[data-tema="escuro"] .torre-section-card {
+  background: var(--bg-elevated) !important;
+  border-color: var(--border) !important;
+}
+
+html[data-tema="escuro"] .app-header-actions button,
+html[data-tema="escuro"] .app-header-actions a,
+html[data-tema="escuro"] .btn-ghost,
+html[data-tema="escuro"] .btn-gray,
+html[data-tema="escuro"] .theme-toggle,
+html[data-tema="escuro"] input,
+html[data-tema="escuro"] select,
+html[data-tema="escuro"] textarea,
+html[data-tema="escuro"] .select-search-input,
+html[data-tema="escuro"] .multi-select-btn {
+  background: var(--bg-base) !important;
+  border-color: var(--border-md) !important;
+  color: var(--text-primary) !important;
+}
+
+html[data-tema="escuro"] th {
+  background: #101827 !important;
+  color: var(--text-secondary) !important;
+}
+
+html[data-tema="escuro"] td {
+  color: var(--text-secondary);
+  border-bottom-color: var(--border) !important;
+}

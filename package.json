@@ -1,0 +1,32 @@
+{
+  "name": "controle-de-entrega",
+  "version": "1.0.0",
+  "description": "",
+  "main": "back/db.js",
+  "scripts": {
+    "test": "node back/test/smoke.js",
+    "test:checklist": "node --test back/test/checklist-whatsapp.test.cjs",
+    "test:tms-edicao": "node --test back/test/tms-edicao.test.cjs back/test/tms-edicao-front.test.cjs back/test/tms-edicao-pg.test.cjs",
+    "test:tms-planilha": "node --test back/test/tms-planilha-sync.test.cjs",
+    "test:material": "node --test back/test/material-manual.test.cjs back/test/material-manual-front.test.cjs",
+    "test:gps": "node --test back/test/gps.test.cjs back/test/gps-precisao.test.cjs back/test/lojas-coincidentes.test.cjs back/test/gps-sulacap.test.cjs back/test/gps-recuperacao.test.cjs back/test/gps-formulario.test.cjs back/test/previsao-area.test.cjs back/test/gps-visitas-previsao.test.cjs",
+    "start": "node back/server.js",
+    "test:frota": "node --test back/test/gps.test.cjs back/test/gps-precisao.test.cjs back/test/lojas-coincidentes.test.cjs back/test/frota-operacao.test.cjs back/test/frota-tela-cheia.test.cjs back/test/frota-posicoes.test.cjs back/test/frota-historico.test.cjs back/test/frota-historico-front.test.cjs back/test/frota-rastros.test.cjs back/test/frota-rastros-front.test.cjs back/test/frota-periodo.test.cjs back/test/gps-sulacap.test.cjs back/test/gps-recuperacao.test.cjs back/test/gps-formulario.test.cjs back/test/previsao-area.test.cjs back/test/gps-visitas-previsao.test.cjs",
+    "test:tms-horarios": "node --test back/test/tms-horarios-front.test.cjs",
+    "test:t4s-historico": "node --test back/test/t4s-historico.test.cjs back/test/t4s-historico-pg.test.cjs",
+    "test:gps-sinais": "node --test back/test/gps-sinais.test.cjs",
+    "test:t4s-api": "node --test back/test/t4s-api.test.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.75.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
+    "pg": "^8.20.0",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  }
+}
